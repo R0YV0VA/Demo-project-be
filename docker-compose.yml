@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  authback:
+    container_name: API
+    image: authwithjwtexample:latest
+    ports:
+      - 7003:443
+      - 5005:80
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=Yarikbrother1
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - USER_SECRETS_ID=f805e68d-4598-4314-a6e5-631df0b177f3
+    volumes:
+      - ~/.aspnet/https:/https:ro
+      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID:/root/.microsoft/usersecrets/$USER_SECRETS_ID
+    depends_on:
+      - DB
+  authfront:
+    container_name: Front
+    image: authexample:dev
+    ports:
+      - "8080:3000"
+  DB:
+    container_name: Database
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Yarikbrother1"
+      ACCEPT_EULA: "Y"
